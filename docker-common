@@ -1,0 +1,20 @@
+#!/bin/bash -e
+[ -n "$DOCKER_COMMON" ] && return || readonly DOCKER_COMMON=1
+SCRIPTPATH=$(dirname ${BASH_SOURCE[0]})
+pushd $SCRIPTPATH > /dev/null
+. common
+
+require_command "docker"
+
+function docker_build {
+  local target=$1
+  info "building docker image: '$target'"
+  docker build -t=$target . && success "built docker image: '$target'"	
+}
+
+function assert_docker_container_exists {
+  local container=$1
+  [ $(docker ps | grep -E ".* $container( |$)" | wc -l) -eq 1 ] || die "docker container does not exist: $container"
+}
+
+popd > /dev/null

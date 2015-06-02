@@ -1,0 +1,27 @@
+#!/bin/bash -e
+SCRIPTPATH=$(dirname ${BASH_SOURCE[0]})
+#!/bin/bash -e
+SCRIPTPATH=$(dirname ${BASH_SOURCE[0]})
+pushd $SCRIPTPATH > /dev/null
+. ../docker-common
+. descriptor
+
+if [ $# -eq 0 ]
+  then
+    error "Arguments not provided"
+    echo "usage: ./run <servername> <hornetQ_port> <web_port>
+example: ./run server1 5445 8090"
+    exit -1
+fi
+
+
+ServerName=$1
+HornetQPort=$2
+WebPort=$3
+
+info "starting: $TARGET"
+info "parameters: server name=$ServerName, hornetQ port=$HornetQPort, web port=$WebPort"
+
+docker run -v /etc/localtime:/etc/localtime:ro --name $CONTAINER$ServerName -p $HornetQPort:5445 -p $WebPort:8090  -i $TARGET
+
+popd > /dev/null

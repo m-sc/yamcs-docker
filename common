@@ -1,0 +1,125 @@
+#!/bin/bash -e
+[ -n "$COMMON" ] && return || readonly COMMON=1
+SCRIPTPATH=$(dirname ${BASH_SOURCE[0]})
+pushd $SCRIPTPATH > /dev/null
+
+set -o errtrace
+trap 'exit 1' ERR
+
+function supports_colors {
+  tput colors &> /dev/null || return 1
+}
+
+if supports_colors; then
+  COLOR_RESET=$(tput sgr0)
+  COLOR_WHITE=$(tput setaf 7)
+  COLOR_RED=$(tput setaf 1)
+  COLOR_GREEN=$(tput setaf 2)
+fi
+
+USAGE="
+Usage: not defined
+"
+
+function print_color {
+  local color=$1; local msg=$2;
+  printf "$color$msg$COLOR_RESET"
+}
+
+function message {
+  local color=$1; local caption=$2; local msgs=${@:3}
+  print_color $color "$caption "
+  printf "$msgs" >&2
+  printf "\n"
+}
+
+function info {
+  message $COLOR_WHITE "[INFO]" $@
+}
+
+function error {
+  message $COLOR_RED "[ERROR]" $@
+}
+
+function die {
+  error $@
+  exit 1
+}
+
+function success {
+  message $COLOR_GREEN "[SUCCESS]" $@
+}
+
+function system_log {
+  local command=$1
+  local msg=$2
+  logger -t $command $msg
+  info "$command: " $msg
+}
+
+function require_command {
+  info "checking dependencies: " $@
+  for command in $@; do
+    hash $command 2>/dev/null || die "command not found: $command."
+  done
+}
+
+function usage {
+  echo "$USAGE"
+  [ $# -eq 1 ] && exit $1
+}
+
+function process_parameters {
+  local allowed_options=$1
+  local pars=${@:2}
+  process_optional_parameters rest $allowed_options $pars
+  process_required_parameters $rest
+}
+
+function process_optional_parameters {
+  local __result=$1
+  local allowed_options=$2
+  local OPTIND o a
+  shift; shift;
+  while getopts $allowed_options option; do
+    case "$option" in
+      h)  usage 0
+          ;;
+      :)  error "missing argument for -$OPTARG"
+          usage 1
+          ;;
+      \?) error "illegal option: -$OPTARG"
+          usage 1
+          ;;
+      *)  process_option $option
+          ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+  eval $__result="'$@'"
+}
+
+function process_required_parameters {
+  die "function 'process_required_parameters' is not implemented. Please override this function."
+}
+
+function process_option {
+  die "function 'process_option' is not implemented. Please override this function"
+}
+
+function ensure_directory_exists {
+  local dir=$1
+  mkdir -p $dir
+}
+
+function assert_file_exists {
+  local file=$1
+  [ -f $file ] || die "file does not exist: '$file'"
+}
+
+function append_timestamp {
+  local name=$1;
+  echo ${name}_$(date "+%d-%m-%y_%H-%M-%S")
+}
+
+popd > /dev/null

@@ -1,0 +1,7 @@
+#!/bin/bash -e
+SCRIPTPATH=$(dirname ${BASH_SOURCE[0]})
+pushd $SCRIPTPATH > /dev/null
+. ../docker-common
+. descriptor
+docker_build $TARGET
+popd > /dev/null

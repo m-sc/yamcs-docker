@@ -1,0 +1,5 @@
+#!/bin/bash -e
+USER="space"
+CONTAINER="java"
+VERSION="0.2"
+TARGET="$USER/$CONTAINER:$VERSION"
