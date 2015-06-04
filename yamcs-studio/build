@@ -1,0 +1,14 @@
+#!/bin/bash -e
+SCRIPTPATH=$(dirname ${BASH_SOURCE[0]})
+pushd $SCRIPTPATH > /dev/null
+. ../docker-common
+. descriptor
+if [ ! -f ../common ]; then
+  error "Could not find file ../common"
+  exit 1
+fi
+cp ../common .
+docker_build $TARGET .
+rm common
+
+popd > /dev/null

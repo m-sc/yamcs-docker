@@ -1,0 +1,5 @@
+#!/bin/bash -e
+USER="space"
+CONTAINER="yamcs-studio"
+VERSION="0.1"
+TARGET="$USER/$CONTAINER:$VERSION"

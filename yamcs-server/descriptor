@@ -1,5 +1,5 @@
 #!/bin/bash -e
 USER="space"
-CONTAINER="yamcs-vanilla"
+CONTAINER="yamcs-server"
 VERSION="0.1"
 TARGET="$USER/$CONTAINER:$VERSION"

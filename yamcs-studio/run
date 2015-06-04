@@ -1,0 +1,16 @@
+#!/bin/bash -e
+SCRIPTPATH=$(dirname ${BASH_SOURCE[0]})
+#!/bin/bash -e
+SCRIPTPATH=$(dirname ${BASH_SOURCE[0]})
+pushd $SCRIPTPATH > /dev/null
+. ../docker-common
+. descriptor
+
+info "starting: $TARGET"
+
+#allow root to connect to X (needed to display X from Docker container)
+xhost local:root
+
+docker run -ti --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/localtime:/etc/localtime:ro --name $CONTAINER$ServerName -i $TARGET
+
+popd > /dev/null
