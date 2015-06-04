@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
 #RUN apt-get upgrade -y
 
-RUN apt-get install -y libgtk2.0-0 libswt-gtk-3-jni libswt-gtk-3-java
+RUN apt-get install -y libgtk-3-0 libswt-gtk-3-jni libswt-gtk-3-java
 
 COPY common /
 COPY install-yamcs-studio.sh /
