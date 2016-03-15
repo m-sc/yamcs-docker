@@ -22,6 +22,7 @@ WebPort=$3
 info "starting: $TARGET"
 info "parameters: server name=$ServerName, hornetQ port=$HornetQPort, web port=$WebPort"
 
-docker run -v /etc/localtime:/etc/localtime:ro --name $CONTAINER$ServerName -p $HornetQPort:5445 -p $WebPort:8090  -i $TARGET
+xhost local:root
+docker run -it --rm -v /etc/localtime:/etc/localtime:ro -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --name $CONTAINER$ServerName -p $HornetQPort:5445 -p $WebPort:8090  -i $TARGET
 
 popd > /dev/null

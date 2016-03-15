@@ -3,7 +3,10 @@
 #/install-yamcs.sh
 
 # Start the yamcs server
-/usr/sbin/service yamcs-server start
+#/usr/sbin/service yamcs-server start
+cd /root/yamcs/live/
+bin/yamcs-server.sh &
+
 
 # Start the simulator
-/opt/yamcs/bin/simulator.sh && tail -f /dev/null
+bin/simulator.sh && tail -f /dev/null

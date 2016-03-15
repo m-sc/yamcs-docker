@@ -16,47 +16,32 @@ Mandatory arguments:
        output-dir    the output directory to put deb packages in
   "
   
-  
+  local GIT_REVISION=$1 
+ 
   local YAMCS_REPO="https://github.com/yamcs/yamcs.git"
-  local YAMCS_SRC=$SRC_DIR"/yamcs"
+  local YAMCS_SRC="/root/yamcs"
   local OUTPUT_DIR="/root/"
   git clone $YAMCS_REPO $YAMCS_SRC 
+  echo "Checking out yamcs revision " $GIT_REVISION
+  cd $YAMCS_SRC
+  git checkout $GIT_REVISION
   
   info "Building yamcs"
-  build_yamcs $YAMCS_SRC $OUTPUT_DIR
-  
- find /root/ -name "*deb" | xargs dpkg -i
-
+  cd $YAMCS_SRC
+  mvn clean install -DskipTests
 
   # configure yamcs
   # install the default dev config
-  cd $YAMCS_SRC
   ./make-live-devel.sh
-  cp -r $YAMCS_SRC/live/etc/* /opt/yamcs/etc/
-  cp -r $YAMCS_SRC/live/mdb/* /opt/yamcs/mdb/
-  cp -r $YAMCS_SRC/live/test_data /opt/yamcs/test_data
-  
+
   #ensure permissions on directories used by yamcs
-  chown -R yamcs /storage/
-  mkdir -p /opt/yamcs/.yamcs/log
-  mkdir -p /opt/yamcs/data/journal  
-  chown -R yamcs /opt/yamcs/.yamcs
-  chown -R yamcs /opt/yamcs/data
+  if [ ! -d "/storage" ]; then
+  mkdir /storage/
+  fi
 
   info "Exiting"
 }
 
-
-function build_yamcs {
-  local SRC=$1
-  local OUT=$2
-  local RPMS_DIR=$HOME"/rpmbuild"
-
-  cd $SRC
-  ./make-rpm.sh
-  cd $OUT
-  find $RPMS_DIR -name yamcs*noarch.rpm | xargs alien -c
-}
 
 
 main $@
